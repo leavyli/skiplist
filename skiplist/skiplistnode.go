@@ -5,8 +5,12 @@ type skipListLevel struct {
 	span    int
 }
 
+type Compare interface {
+	SkipListNodeCompare(data interface{}) int
+}
+
 type SkipListNode struct {
-	data     int
+	data     Compare
 	level    []skipListLevel
 	backward *SkipListNode
 }

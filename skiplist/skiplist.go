@@ -20,14 +20,14 @@ type SkipList struct {
 func CreateSkipList() *SkipList {
 	headLevel := make([]skipListLevel, MaxLevel)
 	head := SkipListNode{
-		-1,
+		nil,
 		headLevel,
 		nil,
 	}
 
 	tailLevel := make([]skipListLevel, MaxLevel)
 	tail := SkipListNode{
-		-1,
+		nil,
 		tailLevel,
 		&head,
 	}
@@ -42,7 +42,7 @@ func CreateSkipList() *SkipList {
 }
 
 //插入前提是没有相同的元素存在
-func (list *SkipList) Insert(data int) *SkipListNode {
+func (list *SkipList) Insert(data Compare) *SkipListNode {
 	var (
 		update [MaxLevel]*SkipListNode
 	)
@@ -50,7 +50,7 @@ func (list *SkipList) Insert(data int) *SkipListNode {
 	x := list.head
 	for i := list.level - 1; i >= 0; i-- {
 		for {
-			if x.level[i].forward == nil || x.level[i].forward.data > data {
+			if x.level[i].forward == nil || x.level[i].forward.data.SkipListNodeCompare(data) > 0 {
 				break
 			} else {
 				x = x.level[i].forward

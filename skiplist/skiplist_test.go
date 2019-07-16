@@ -20,20 +20,29 @@ func TestRandomLevel(t *testing.T) {
 	fmt.Println("cnt:", cnt)
 }
 
+type compareInt int
+
+func (c compareInt) SkipListNodeCompare(data interface{}) int {
+	if n, ok := data.(compareInt); ok {
+		return int(c - n)
+	}
+	panic("unexpected type")
+}
+
 func TestSkipList_Insert(t *testing.T) {
 	l := skiplist.CreateSkipList()
-	l.Insert(12)
-	l.Insert(13)
-	l.Insert(14)
-	l.Insert(1)
-	l.Insert(9992)
+
+	for i := 123; i >= 0; i-- {
+		l.Insert(compareInt(i))
+	}
 
 	l.Each(func(v interface{}) {
-		fmt.Println(v)
+		fmt.Print(v, ",")
 	})
+	fmt.Println()
 
 	l.Reach(func(v interface{}) {
-		fmt.Println(v)
+		fmt.Print(v, ",")
 	})
 
 }
