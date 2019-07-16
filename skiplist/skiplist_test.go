@@ -26,6 +26,14 @@ func TestSkipList_Insert(t *testing.T) {
 	l.Insert(13)
 	l.Insert(14)
 	l.Insert(1)
-	l.Insert(2)
+	l.Insert(9992)
+
+	l.Each(func(v interface{}) {
+		fmt.Println(v)
+	})
+
+	l.Reach(func(v interface{}) {
+		fmt.Println(v)
+	})
 
 }

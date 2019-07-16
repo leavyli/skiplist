@@ -10,9 +10,6 @@ const (
 	LevelPR  = 0.25
 )
 
-type compare interface {
-}
-
 type SkipList struct {
 	head   *SkipListNode
 	tail   *SkipListNode
@@ -96,6 +93,30 @@ func (list *SkipList) Insert(data int) *SkipListNode {
 	}
 
 	return node
+}
+
+//正向遍历
+func (list *SkipList) Each(fn func(v interface{})) {
+	cur := list.head.level[0].forward
+	for {
+		if cur == nil {
+			break
+		}
+		fn(cur.data)
+		cur = cur.level[0].forward
+	}
+}
+
+//反向遍历
+func (list *SkipList) Reach(fn func(v interface{})) {
+	cur := list.tail
+	for {
+		if cur == nil {
+			break
+		}
+		fn(cur.data)
+		cur = cur.backward
+	}
 }
 
 //返回层数， 概率为p^level
