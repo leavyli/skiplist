@@ -105,6 +105,7 @@ func (list *SkipList) Exist(data Compare) bool {
 	return ret
 }
 
+//查找是否存在
 func (list *SkipList) _exist(data Compare) (*SkipListNode, bool) {
 	curLevel := list.level - 1
 	cur := list.head
@@ -140,6 +141,7 @@ func (list *SkipList) Each(fn func(v interface{})) {
 	}
 }
 
+//调试输出每层的数据
 func (list *SkipList) DebugOut() {
 	for i := 0; i < list.level; i++ {
 		fmt.Println("level:", i)
