@@ -24,7 +24,14 @@ type compareInt int
 
 func (c compareInt) SkipListNodeCompare(data interface{}) int {
 	if n, ok := data.(compareInt); ok {
-		return int(c - n)
+		if c-n > 0 {
+			return 1
+		}
+		if c-n < 0 {
+			return -1
+		}
+
+		return 0
 	}
 	panic("unexpected type")
 }
@@ -32,17 +39,25 @@ func (c compareInt) SkipListNodeCompare(data interface{}) int {
 func TestSkipList_Insert(t *testing.T) {
 	l := skiplist.CreateSkipList()
 
-	for i := 123; i >= 0; i-- {
+	for i := 1; i <= 100000; i++ {
 		l.Insert(compareInt(i))
 	}
 
-	l.Each(func(v interface{}) {
-		fmt.Print(v, ",")
-	})
-	fmt.Println()
+	//l.Each(func(v interface{}) {
+	//	fmt.Print(v, ",")
+	//})
+	//fmt.Println()
+	//
+	//l.Reach(func(v interface{}) {
+	//	fmt.Print(v, ",")
+	//})
+	//fmt.Println()
 
-	l.Reach(func(v interface{}) {
-		fmt.Print(v, ",")
-	})
+	//l.DebugOut()
+	for i := 100000; i > 0; i-- {
+		if !l.Exist(compareInt(i)) {
+			t.Error("exist is no pass")
+		}
+	}
 
 }

@@ -1,8 +1,8 @@
 package skiplist
 
 import (
+	"fmt"
 	"math/rand"
-	"time"
 )
 
 const (
@@ -36,7 +36,7 @@ func CreateSkipList() *SkipList {
 		&head,
 		&tail,
 		0,
-		1,
+		0,
 	}
 	return l
 }
@@ -95,6 +95,28 @@ func (list *SkipList) Insert(data Compare) *SkipListNode {
 	return node
 }
 
+//查找是否存在
+func (list *SkipList) Exist(data Compare) bool {
+	curLevel := list.level - 1
+	cur := list.head
+	for {
+		if cur.level[curLevel].forward != nil &&
+			cur.level[curLevel].forward.data.SkipListNodeCompare(data) == 0 {
+			return true
+		}
+
+		if cur.level[curLevel].forward != nil &&
+			cur.level[curLevel].forward.data.SkipListNodeCompare(data) < 0 {
+			cur = cur.level[curLevel].forward
+		} else {
+			curLevel--
+			if curLevel < 0 {
+				return false
+			}
+		}
+	}
+}
+
 //正向遍历
 func (list *SkipList) Each(fn func(v interface{})) {
 	cur := list.head.level[0].forward
@@ -105,6 +127,22 @@ func (list *SkipList) Each(fn func(v interface{})) {
 		fn(cur.data)
 		cur = cur.level[0].forward
 	}
+}
+
+func (list *SkipList) DebugOut() {
+	for i := 0; i < list.level; i++ {
+		fmt.Println("level:", i)
+		cur := list.head.level[i].forward
+		for {
+			if cur == nil {
+				break
+			}
+			fmt.Print(cur.data, ",")
+			cur = cur.level[i].forward
+		}
+		fmt.Println()
+	}
+
 }
 
 //反向遍历
@@ -121,13 +159,14 @@ func (list *SkipList) Reach(fn func(v interface{})) {
 
 //返回层数， 概率为p^level
 func RandomLevel() int {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	level := 1
 	for {
-		if r.Float32() < LevelPR && level < MaxLevel {
+		p := rand.Float32()
+		if p < LevelPR && level < MaxLevel {
+			level = level + 1
+		} else {
 			break
 		}
-		level = level + 1
 	}
 	return level
 }
