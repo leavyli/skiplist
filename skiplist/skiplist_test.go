@@ -39,7 +39,7 @@ func (c compareInt) SkipListNodeCompare(data interface{}) int {
 func TestSkipList_Insert(t *testing.T) {
 	l := skiplist.CreateSkipList()
 
-	for i := 1; i <= 100000; i++ {
+	for i := 1; i <= 3000000; i++ {
 		l.Insert(compareInt(i))
 	}
 
@@ -54,7 +54,7 @@ func TestSkipList_Insert(t *testing.T) {
 	//fmt.Println()
 
 	//l.DebugOut()
-	for i := 100000; i > 0; i-- {
+	for i := 3000000; i > 0; i-- {
 		if !l.Exist(compareInt(i)) {
 			t.Error("exist is no pass")
 		}

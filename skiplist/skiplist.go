@@ -41,8 +41,12 @@ func CreateSkipList() *SkipList {
 	return l
 }
 
-//插入前提是没有相同的元素存在
+//插入是没有相同的元素存在
 func (list *SkipList) Insert(data Compare) *SkipListNode {
+	if node, ok := list._exist(data); ok {
+		return node
+	}
+
 	var (
 		update [MaxLevel]*SkipListNode
 	)
@@ -97,12 +101,21 @@ func (list *SkipList) Insert(data Compare) *SkipListNode {
 
 //查找是否存在
 func (list *SkipList) Exist(data Compare) bool {
+	_, ret := list._exist(data)
+	return ret
+}
+
+func (list *SkipList) _exist(data Compare) (*SkipListNode, bool) {
 	curLevel := list.level - 1
 	cur := list.head
 	for {
+		if curLevel < 0 {
+			return nil, false
+		}
+
 		if cur.level[curLevel].forward != nil &&
 			cur.level[curLevel].forward.data.SkipListNodeCompare(data) == 0 {
-			return true
+			return cur.level[curLevel].forward, true
 		}
 
 		if cur.level[curLevel].forward != nil &&
@@ -110,9 +123,7 @@ func (list *SkipList) Exist(data Compare) bool {
 			cur = cur.level[curLevel].forward
 		} else {
 			curLevel--
-			if curLevel < 0 {
-				return false
-			}
+
 		}
 	}
 }
