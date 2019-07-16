@@ -10,6 +10,9 @@ const (
 	LevelPR  = 0.25
 )
 
+type compare interface {
+}
+
 type SkipList struct {
 	head   *SkipListNode
 	tail   *SkipListNode
@@ -17,6 +20,85 @@ type SkipList struct {
 	level  int
 }
 
+func CreateSkipList() *SkipList {
+	headLevel := make([]skipListLevel, MaxLevel)
+	head := SkipListNode{
+		-1,
+		headLevel,
+		nil,
+	}
+
+	tailLevel := make([]skipListLevel, MaxLevel)
+	tail := SkipListNode{
+		-1,
+		tailLevel,
+		&head,
+	}
+
+	l := &SkipList{
+		&head,
+		&tail,
+		0,
+		1,
+	}
+	return l
+}
+
+//插入前提是没有相同的元素存在
+func (list *SkipList) Insert(data int) *SkipListNode {
+	var (
+		update [MaxLevel]*SkipListNode
+	)
+	//查询需要更新的节点
+	x := list.head
+	for i := list.level - 1; i >= 0; i-- {
+		for {
+			if x.level[i].forward == nil || x.level[i].forward.data > data {
+				break
+			} else {
+				x = x.level[i].forward
+			}
+		}
+		update[i] = x
+	}
+
+	//比原来高层设置为head
+	level := RandomLevel()
+	if level > list.level {
+		for i := list.level; i < level; i++ {
+			update[i] = list.head
+		}
+		list.level = level
+	}
+
+	arr := make([]skipListLevel, level)
+	node := &SkipListNode{
+		data,
+		arr,
+		nil,
+	}
+	//插入节点
+	for i := 0; i < level; i++ {
+		node.level[i].forward = update[i].level[i].forward
+		update[i].level[i].forward = node
+	}
+
+	if update[0] == list.head {
+		node.backward = nil
+	} else {
+		node.backward = update[0]
+	}
+
+	if node.level[0].forward != nil {
+		node.level[0].forward.backward = node
+	} else {
+		list.tail = node
+	}
+
+	return node
+}
+
+//返回层数， 概率为p^level
 func RandomLevel() int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	level := 1
